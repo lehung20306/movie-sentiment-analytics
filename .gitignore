@@ -1,0 +1,12 @@
+# Environments
+.env
+__pycache__/
+*.pyc
+
+# Data & Models
+data/
+models/
+
+# Virtual Environment
+venv/
+env/
