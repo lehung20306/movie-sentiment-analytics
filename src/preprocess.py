@@ -40,24 +40,33 @@ def clean_text(text: str) -> str:
 if __name__ == "__main__":
     print("Starting text preprocessing...")
     
-    input_path = "data/raw/raw_reviews.csv"
+    # 1. Update input path to the Kaggle dataset
+    input_path = "data/raw/IMDB Dataset.csv"
     output_dir = "data/processed"
     output_path = os.path.join(output_dir, "cleaned_reviews.csv")
     
     if not os.path.exists(input_path):
-        print(f"Error: Could not find {input_path}. Run api_client.py first.")
+        print(f"Error: Could not find {input_path}. Please place the Kaggle file in data/raw/.")
     else:
         # Read the raw data
         df = pd.read_csv(input_path)
         
-        print(f"Cleaning {len(df)} reviews (this might take a few seconds)...")
+        # 2. Rename the 'review' column to 'text' to match the existing logic
+        if 'review' in df.columns:
+            df = df.rename(columns={"review": "text"})
+            
+        # 3. Convert string labels to binary numbers (positive -> 1, negative -> 0)
+        df["sentiment"] = df["sentiment"].map({"positive": 1, "negative": 0})
+        
+        print(f"Cleaning {len(df)} reviews (this might take a few minutes)...")
+        
         # Apply the cleaning function to create a new column
         df['clean_text'] = df['text'].apply(clean_text)
         
         # Ensure the processed directory exists
         os.makedirs(output_dir, exist_ok=True)
         
-        # Save the cleaned data
+        # Save the cleaned data (this overwrites the old API file)
         df.to_csv(output_path, index=False, encoding='utf-8')
         
         print(f"Success! Cleaned data saved to: {output_path}")
